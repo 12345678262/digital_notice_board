@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin - Notice Board</title>
+<style>
+body{font-family:Arial;background:#f4f4f4;margin:0;padding:20px}
+.box{max-width:500px;margin:auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 10px #0002}
+input,textarea,select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:5px}
+button{background:#0d47a1;color:#fff;padding:10px;width:100%;border:none;border-radius:5px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="box" id="loginBox">
+<h2>Admin Login</h2>
+<input id="u" placeholder="Username (admin)">
+<input id="p" type="password" placeholder="Password (1234)">
+<button onclick="login()">Login</button>
+</div>
+
+<div class="box" id="adminBox" style="display:none">
+<h2>Add New Notice</h2>
+<input id="title" placeholder="Notice Title">
+<select id="cat"><option>Imp</option><option>Exam</option><option>Event</option></select>
+<input id="date" type="date">
+<textarea id="desc" placeholder="Description"></textarea>
+<input id="file" type="file">
+<button onclick="addNotice()">Add Notice</button>
+<button onclick="clearAll()" style="background:#e53935;margin-top:10px">Delete All Notices</button>
+<br><br>
+<a href="index.html">← Back to Board</a>
+</div>
+
+<script>
+function login(){
+ if(document.getElementById('u').value=='admin' && document.getElementById('p').value=='1234'){
+  document.getElementById('loginBox').style.display='none';
+  document.getElementById('adminBox').style.display='block';
+ } else alert('Username: admin / Password: 1234');
+}
+function addNotice(){
+ let t=document.getElementById('title').value;
+ let c=document.getElementById('cat').value;
+ let d=document.getElementById('date').value;
+ let de=document.getElementById('desc').value;
+ let f=document.getElementById('file').files[0];
+ let reader = new FileReader();
+ reader.onload = function(e){
+  let notices=JSON.parse(localStorage.getItem('notices')||'[]');
+  notices.push({title:t,cat:c,date:d||new Date().toISOString().split('T')[0],desc:de,file:e.target.result||''});
+  localStorage.setItem('notices',JSON.stringify(notices));
+  alert('Notice Added!'); location.href='index.html';
+ }
+ if(f) reader.readAsDataURL(f);
+ else {
+  let notices=JSON.parse(localStorage.getItem('notices')||'[]');
+  notices.push({title:t,cat:c,date:d||new Date().toISOString().split('T')[0],desc:de,file:''});
+  localStorage.setItem('notices',JSON.stringify(notices));
+  alert('Notice Added!'); location.href='index.html';
+ }
+}
+function clearAll(){ if(confirm('Delete all?')){localStorage.removeItem('notices'); alert('Cleared');}}
+</script>
+</body>
+</html>
